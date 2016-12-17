@@ -19,4 +19,4 @@ The grant types are currently not supported.
 If authorization token will expire, client can regenerate token using the refresh_token grant type.
 
 ## Authorization Middleware 
-This Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server calls authorizing only calls that contain a valid beared token.
+This Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server calls authorizing only calls that contain a valid bearer token.
