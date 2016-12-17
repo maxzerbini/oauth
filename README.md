@@ -13,7 +13,7 @@ _OAuthBearerServer_ supports password grant type allowing the token generation f
 _OAuthBearerServer_ supports client_credentials grant type allowing the token generation for client_id / client_secret credentials.
 
 ### Authorization Code and Implicit grant type
-The grant types are currently not supported.
+These grant types are currently not supported.
 
 ### Refresh token grant type
 If authorization token will expire, client can regenerate token using the refresh_token grant type.
