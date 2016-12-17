@@ -10,7 +10,7 @@ import (
 
 type Any interface{}
 
-// CredentialsVerifier defines the interface of the user and client credential verifier.
+// CredentialsVerifier defines the interface of the user and client credentials verifier.
 type CredentialsVerifier interface {
 	// Validate username and password returning an error if the user credentials are wrong
 	ValidateUser(username string, password string) error
