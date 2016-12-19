@@ -46,7 +46,7 @@ func main() {
 	router.Run(":9090")
 }
 ```
-See /test/authserver/main.go for the full example.
+See [/test/authserver/main.go](https://github.com/maxzerbini/oauth/blob/master/test/authserver/main.go) for the full example.
 
 ## Authorization Middleware usage example
 This snippet shows how to use the middleware
@@ -58,7 +58,7 @@ This snippet shows how to use the middleware
 	authorized.GET("/customers", GetCustomers)
 	authorized.GET("/customers/:id/orders", GetOrders)
 ```
-See /test/resourceserver/main.go for the full example.
+See [/test/resourceserver/main.go](https://github.com/maxzerbini/oauth/blob/master/test/resourceserver/main.go) for the full example.
 
 Note that the authorization server and the authorization middleware are both using the same token formatter and the same secret key for encryption/decryption.
 
