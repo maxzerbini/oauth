@@ -8,14 +8,18 @@ import (
 	"github.com/satori/go.uuid"
 )
 
+const (
+	TOKEN_TYPE = "Bearer"
+)
+
 type Any interface{}
 
 // CredentialsVerifier defines the interface of the user and client credentials verifier.
 type CredentialsVerifier interface {
 	// Validate username and password returning an error if the user credentials are wrong
-	ValidateUser(username string, password string) error
+	ValidateUser(username, password, scope string) error
 	// Validate clientId and secret returning an error if the client credentials are wrong
-	ValidateClient(clientID string, clientSecret string) error
+	ValidateClient(clientID, clientSecret, scope string) error
 	// Provide additional claims to the token
 	AddClaims(credential, tokenID, tokenType string) (map[string]string, error)
 	// Optionally store the tokenID generated for the user
@@ -56,9 +60,10 @@ func (s *OAuthBearerServer) UserCredentials(ctx *gin.Context) {
 	// grant_type password variables
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
+	scope := ctx.PostForm("scope")
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken)
+	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope)
 	ctx.JSON(code, resp)
 }
 
@@ -68,17 +73,18 @@ func (s *OAuthBearerServer) ClientCredentials(ctx *gin.Context) {
 	// grant_type client_credentials variables
 	clientId := ctx.PostForm("client_id")
 	clientSecret := ctx.PostForm("client_secret")
+	scope := ctx.PostForm("scope")
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken)
+	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken, scope)
 	ctx.JSON(code, resp)
 }
 
 // Generate token response
-func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken string) (int, Any) {
+func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken, scope string) (int, Any) {
 	// check grant_Type
 	if grantType == "password" {
-		err := s.verifier.ValidateUser(credential, secret)
+		err := s.verifier.ValidateUser(credential, secret, scope)
 		if err == nil {
 			token, refresh, err := s.generateTokens(credential, "U")
 			if err == nil {
@@ -102,7 +108,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 			return http.StatusUnauthorized, "Not authorized"
 		}
 	} else if grantType == "client_credentials" {
-		err := s.verifier.ValidateClient(credential, secret)
+		err := s.verifier.ValidateClient(credential, secret, scope)
 		if err == nil {
 			token, refresh, err := s.generateTokens(credential, "C")
 			if err == nil {
@@ -189,7 +195,7 @@ func (s *OAuthBearerServer) cryptTokens(token *Token, refresh *RefreshToken) (re
 	if err != nil {
 		return nil, err
 	}
-	resp = &TokenResponse{Token: ctoken, RefreshToken: crefresh, TokenType: "bearer", ExperesIn: (int64)(s.TokenTTL / time.Second)}
+	resp = &TokenResponse{Token: ctoken, RefreshToken: crefresh, TokenType: TOKEN_TYPE, ExperesIn: (int64)(s.TokenTTL / time.Second)}
 
 	if s.verifier != nil {
 		// add properties

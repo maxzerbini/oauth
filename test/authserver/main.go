@@ -66,7 +66,7 @@ type TestUserVerifier struct {
 }
 
 // Validate username and password returning an error if the user credentials are wrong
-func (*TestUserVerifier) ValidateUser(username string, password string) error {
+func (*TestUserVerifier) ValidateUser(username, password, scope string) error {
 	if username == "user01" && password == "12345" {
 		return nil
 	} else {
@@ -75,7 +75,7 @@ func (*TestUserVerifier) ValidateUser(username string, password string) error {
 }
 
 // Validate clientId and secret returning an error if the client credentials are wrong
-func (*TestUserVerifier) ValidateClient(clientId string, clientSecret string) error {
+func (*TestUserVerifier) ValidateClient(clientId, clientSecret, scope string) error {
 	if clientId == "abcdef" && clientSecret == "12345" {
 		return nil
 	} else {

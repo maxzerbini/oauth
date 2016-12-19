@@ -66,7 +66,7 @@ func TestDecryptRefreshTokens(t *testing.T) {
 }
 
 func TestGenerateToken4Password(t *testing.T) {
-	code, resp := _sut.generateTokenResponse("password", "user111", "password111", "")
+	code, resp := _sut.generateTokenResponse("password", "user111", "password111", "", "")
 	if code != 200 {
 		t.Fatalf("Error StatusCode = %d", code)
 	}
@@ -74,7 +74,7 @@ func TestGenerateToken4Password(t *testing.T) {
 }
 
 func TestShouldFailGenerateToken4Password(t *testing.T) {
-	code, _ := _sut.generateTokenResponse("password", "user111", "password4444", "")
+	code, _ := _sut.generateTokenResponse("password", "user111", "password4444", "", "")
 	t.Logf("Server response: %v", code)
 	if code != 401 {
 		t.Fatalf("Error StatusCode = %d", code)
@@ -82,7 +82,7 @@ func TestShouldFailGenerateToken4Password(t *testing.T) {
 }
 
 func TestGenerateToken4ClientCredentials(t *testing.T) {
-	code, resp := _sut.generateTokenResponse("client_credentials", "abcdef", "12345", "")
+	code, resp := _sut.generateTokenResponse("client_credentials", "abcdef", "12345", "", "")
 	if code != 200 {
 		t.Fatalf("Error StatusCode = %d", code)
 	}
@@ -90,12 +90,12 @@ func TestGenerateToken4ClientCredentials(t *testing.T) {
 }
 
 func TestRefreshToken4ClientCredentials(t *testing.T) {
-	code, resp := _sut.generateTokenResponse("client_credentials", "abcdef", "12345", "")
+	code, resp := _sut.generateTokenResponse("client_credentials", "abcdef", "12345", "", "")
 	if code != 200 {
 		t.Fatalf("Error StatusCode = %d", code)
 	}
 	t.Logf("Token Response: %v", resp)
-	code2, resp2 := _sut.generateTokenResponse("refresh_token", "", "", resp.(*TokenResponse).RefreshToken)
+	code2, resp2 := _sut.generateTokenResponse("refresh_token", "", "", resp.(*TokenResponse).RefreshToken, "")
 	if code2 != 200 {
 		t.Fatalf("Error StatusCode = %d", code2)
 	}
@@ -107,7 +107,7 @@ type TestUserVerifier struct {
 }
 
 // Validate username and password returning an error if the user credentials are wrong
-func (*TestUserVerifier) ValidateUser(username string, password string) error {
+func (*TestUserVerifier) ValidateUser(username, password, scope string) error {
 	if username == "user111" && password == "password111" {
 		return nil
 	} else if username == "user222" && password == "password222" {
@@ -120,7 +120,7 @@ func (*TestUserVerifier) ValidateUser(username string, password string) error {
 }
 
 // Validate clientId and secret returning an error if the client credentials are wrong
-func (*TestUserVerifier) ValidateClient(clientId string, clientSecret string) error {
+func (*TestUserVerifier) ValidateClient(clientId, clientSecret, scope string) error {
 	if clientId == "abcdef" && clientSecret == "12345" {
 		return nil
 	} else {
