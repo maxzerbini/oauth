@@ -5,7 +5,7 @@ This library offers an OAuth 2.0 Authorization Server based on Gin-Gonic and an 
 
 ## Authorization Server
 The Authorization Server is implemented by the struct _OAuthBearerServer_ that manages two grant types of authorizations (password and client_credentials). 
-This Authorization Server is made to provide authorization token usable for consumimg resource's API. 
+This Authorization Server is made to provide authorization token usable for consuming resources API. 
 
 ### Password grant type
 _OAuthBearerServer_ supports password grant type allowing the token generation for username / password credentials.
