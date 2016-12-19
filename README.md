@@ -24,8 +24,8 @@ The Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server c
 
 ## Token Formatter
 Authorization Server crypts the token using the Token Formatter and Authorization Middleware decrypts the token using the same Token Formatter.
-Programmers can develope their Token Formatter implementing the interface _TokenSecureFormatter_. 
 This library contains a default implementation of the formatter interface called _SHA256RC4TokenSecureFormatter_ based on the algorithms SHA256 and RC4.
+Programmers can develop their Token Formatter implementing the interface _TokenSecureFormatter_ and this is really recommended before publishing the API in a production environment. 
 
 ## Authorization Server usage example
 This snippet shows how to create an authorization server
