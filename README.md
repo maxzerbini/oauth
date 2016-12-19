@@ -1,10 +1,11 @@
 # oauth middleware
 OAuth 2.0 Authorization Server &amp; Authorization Middleware for [Gin-Gonic](https://github.com/gin-gonic/gin)
 
-This library offers an OAuth 2.0 Authorization Server based on Gin-Gonic and an Authorization Gin-Gonic Middleware for Resource Server.
+This library offers an OAuth 2.0 Authorization Server based on Gin-Gonic and an Authorization Middleware usable in Resource Servers developed with Gin-Gonic.
 
 ## Authorization Server
-The Authorization Server is implemented by the struct _OAuthBearerServer_ that manages two grant type of authorizations. This Authorization Server is made to provide authorization token usable for consumimg resource's API. 
+The Authorization Server is implemented by the struct _OAuthBearerServer_ that manages two grant types of authorizations (password and client_credentials). 
+This Authorization Server is made to provide authorization token usable for consumimg resource's API. 
 
 ### Password grant type
 _OAuthBearerServer_ supports password grant type allowing the token generation for username / password credentials.
@@ -16,13 +17,13 @@ _OAuthBearerServer_ supports client_credentials grant type allowing the token ge
 These grant types are currently not supported.
 
 ### Refresh token grant type
-If authorization token will expire, client can regenerate token using the refresh_token grant type.
+If authorization token will expire, client can regenerate the token calling the authorization server and using the refresh_token grant type.
 
 ## Authorization Middleware 
-This Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server calls and authorizes only calls containing a valid bearer token.
+The Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server calls and authorizes only resource requests containing a valid bearer token.
 
 ## Token Formatter
-Authorization Server crypts token using the Token Formatter and Authorization Middleware decrypts the token using the same Token Formatter.
+Authorization Server crypts the token using the Token Formatter and Authorization Middleware decrypts the token using the same Token Formatter.
 Programmers can develope their Token Formatter implementing the interface _TokenSecureFormatter_. 
 This library contains a default implementation of the formatter interface called _SHA256RC4TokenSecureFormatter_ based on the algorithms SHA256 and RC4.
 
