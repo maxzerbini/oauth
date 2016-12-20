@@ -92,7 +92,9 @@ func (*TestUserVerifier) AddClaims(credential, tokenId, tokenType string) (map[s
 }
 
 // Optionally store the token Id generated for the user
-func (*TestUserVerifier) StoreTokenId(credential, tokenId, tokenType string) error { return nil }
+func (*TestUserVerifier) StoreTokenId(credential, tokenId, refreshTokenID, tokenType string) error {
+	return nil
+}
 
 // Provide additional information to the token response
 func (*TestUserVerifier) AddProperties(credential, tokenId, tokenType string) (map[string]string, error) {
@@ -102,4 +104,6 @@ func (*TestUserVerifier) AddProperties(credential, tokenId, tokenType string) (m
 }
 
 // Validate token Id
-func (*TestUserVerifier) ValidateTokenId(credential, tokenId, tokenType string) error { return nil }
+func (*TestUserVerifier) ValidateTokenId(credential, tokenId, refreshTokenID, tokenType string) error {
+	return nil
+}

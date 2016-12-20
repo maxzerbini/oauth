@@ -26,8 +26,9 @@ type Token struct {
 
 // RefreshToken structure included in the authorization server response
 type RefreshToken struct {
-	CreationDate time.Time `json:"date"`
-	TokenId      string    `json:"id_token"`
-	Credential   string    `json:"credential"`
-	TokenType    string    `json:"type"` // "U" for user, "C" for client
+	CreationDate   time.Time `json:"date"`
+	TokenId        string    `json:"id_token"`
+	RefreshTokenId string    `json:"id_refresh_token"`
+	Credential     string    `json:"credential"`
+	TokenType      string    `json:"type"` // "U" for user, "C" for client
 }

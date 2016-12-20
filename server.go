@@ -23,11 +23,11 @@ type CredentialsVerifier interface {
 	// Provide additional claims to the token
 	AddClaims(credential, tokenID, tokenType string) (map[string]string, error)
 	// Optionally store the tokenID generated for the user
-	StoreTokenId(credential, tokenID, tokenType string) error
+	StoreTokenId(credential, tokenID, refreshTokenID, tokenType string) error
 	// Provide additional information to the authorization server response
 	AddProperties(credential, tokenID, tokenType string) (map[string]string, error)
 	// Optionally validate previously stored tokenID during refresh request
-	ValidateTokenId(credential, tokenID, tokenType string) error
+	ValidateTokenId(credential, tokenID, refreshTokenID, tokenType string) error
 }
 
 // OAuthBearerServer is the OAuth 2 Bearer Server implementation.
@@ -89,7 +89,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 			token, refresh, err := s.generateTokens(credential, "U")
 			if err == nil {
 				// Store token id
-				err = s.verifier.StoreTokenId(credential, token.Id, token.TokenType)
+				err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
 				if err != nil {
 					return http.StatusInternalServerError, "Storing Token Id failed"
 				}
@@ -113,7 +113,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 			token, refresh, err := s.generateTokens(credential, "C")
 			if err == nil {
 				// Store token id
-				err = s.verifier.StoreTokenId(credential, token.Id, token.TokenType)
+				err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
 				if err != nil {
 					return http.StatusInternalServerError, "Storing Token Id failed"
 				}
@@ -134,13 +134,13 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 		// refresh token
 		refresh, err := s.provider.DecryptRefreshTokens(refreshToken)
 		if err == nil {
-			err = s.verifier.ValidateTokenId(refresh.Credential, refresh.TokenId, refresh.TokenType)
+			err = s.verifier.ValidateTokenId(refresh.Credential, refresh.TokenId, refresh.RefreshTokenId, refresh.TokenType)
 			if err == nil {
 				// generate new token
 				token, refresh, err := s.generateTokens(refresh.Credential, refresh.TokenType)
 				if err == nil {
 					// Store token id
-					err = s.verifier.StoreTokenId(refresh.Credential, token.Id, token.TokenType)
+					err = s.verifier.StoreTokenId(refresh.Credential, token.Id, refresh.RefreshTokenId, token.TokenType)
 					if err != nil {
 						return http.StatusInternalServerError, "Storing Token Id failed"
 					}
@@ -181,7 +181,7 @@ func (s *OAuthBearerServer) generateTokens(username string, tokenType string) (t
 		}
 	}
 	// create refresh token
-	refresh = &RefreshToken{TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType}
+	refresh = &RefreshToken{RefreshTokenId: uuid.NewV4().String(), TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType}
 
 	return token, refresh, nil
 }

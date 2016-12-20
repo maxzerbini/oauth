@@ -129,7 +129,7 @@ func (*TestUserVerifier) ValidateClient(clientId, clientSecret, scope string) er
 }
 
 // Provide additional claims to the token
-func (*TestUserVerifier) AddClaims(credential, tokenId, tokenType string) (map[string]string, error) {
+func (*TestUserVerifier) AddClaims(credential, tokenID, tokenType string) (map[string]string, error) {
 	claims := make(map[string]string)
 	claims["customerId"] = "1001"
 	claims["customerData"] = `{"OrderDate":"2016-12-14","OrderId":"9999"}`
@@ -137,14 +137,18 @@ func (*TestUserVerifier) AddClaims(credential, tokenId, tokenType string) (map[s
 }
 
 // Optionally store the token Id generated for the user
-func (*TestUserVerifier) StoreTokenId(credential, tokenId, tokenType string) error { return nil }
+func (*TestUserVerifier) StoreTokenId(credential, tokenID, refreshTokenID, tokenType string) error {
+	return nil
+}
 
 // Provide additional information to the token response
-func (*TestUserVerifier) AddProperties(credential, tokenId, tokenType string) (map[string]string, error) {
+func (*TestUserVerifier) AddProperties(credential, tokenID, tokenType string) (map[string]string, error) {
 	props := make(map[string]string)
 	props["customerName"] = "Gopher"
 	return props, nil
 }
 
 // Validate token Id
-func (*TestUserVerifier) ValidateTokenId(credential, tokenId, tokenType string) error { return nil }
+func (*TestUserVerifier) ValidateTokenId(credential, tokenID, refreshTokenID, tokenType string) error {
+	return nil
+}
