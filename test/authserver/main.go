@@ -39,7 +39,7 @@ import (
 		Content-Length: 50
 		Content-Type: application/x-www-form-urlencoded
 
-		grant_type=refresh_token&refresh_token={the refresh_token obtained in the previous calls}
+		grant_type=refresh_token&refresh_token={the refresh_token obtained in the previous response}
 
 */
 func main() {

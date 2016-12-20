@@ -26,7 +26,7 @@ import (
 		Content-Type: application/json
 		Authorization: Bearer {access_token}
 
-	{access_token} is proced by the Authorization Server example.
+	{access_token} is produced by the Authorization Server response (see example /test/authserver).
 
 */
 func main() {
