@@ -67,7 +67,7 @@ See [/test/authserver/main.go](https://github.com/maxzerbini/oauth/blob/master/t
 This snippet shows how to use the middleware
 ```Go
     authorized := router.Group("/")
-	// use the Bearer Athentication meddleware
+	// use the Bearer Athentication middleware
 	authorized.Use(oauth.Authorize("mySecretKey-10101", nil))
 
 	authorized.GET("/customers", GetCustomers)
