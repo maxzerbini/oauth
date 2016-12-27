@@ -41,7 +41,7 @@ func main() {
 func registerAPI(router *gin.Engine) {
 
 	authorized := router.Group("/")
-	// use the Bearer Athentication meddleware
+	// use the Bearer Athentication middleware
 	authorized.Use(oauth.Authorize("mySecretKey-10101", nil))
 
 	authorized.GET("/customers", GetCustomers)
