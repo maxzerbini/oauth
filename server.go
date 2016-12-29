@@ -61,6 +61,15 @@ func (s *OAuthBearerServer) UserCredentials(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
 	scope := ctx.PostForm("scope")
+	if username == "" || password == "" {
+		// get clientId and secret from basic authorization header
+		var err error
+		username, password, err = GetBasicAuthentication(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, "Not authorized")
+			return
+		}
+	}
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
 	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope)
@@ -73,6 +82,15 @@ func (s *OAuthBearerServer) ClientCredentials(ctx *gin.Context) {
 	// grant_type client_credentials variables
 	clientId := ctx.PostForm("client_id")
 	clientSecret := ctx.PostForm("client_secret")
+	if clientId == "" || clientSecret == "" {
+		// get clientId and secret from basic authorization header
+		var err error
+		clientId, clientSecret, err = GetBasicAuthentication(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, "Not authorized")
+			return
+		}
+	}
 	scope := ctx.PostForm("scope")
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")

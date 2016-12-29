@@ -6,7 +6,7 @@ import "encoding/base64"
 import "errors"
 
 // GetBasicAuthentication get username and password from Authorization header
-func GetBasicAuthentication(ctx gin.Context) (username, password string, err error) {
+func GetBasicAuthentication(ctx *gin.Context) (username, password string, err error) {
 	if header := ctx.Request.Header.Get("Authorization"); header != "" {
 		if strings.ToLower(header[:6]) == "basic " {
 			// decode header value
@@ -24,7 +24,7 @@ func GetBasicAuthentication(ctx gin.Context) (username, password string, err err
 }
 
 // Check Basic Autrhorization header credentials
-func CheckBasicAuthentication(username, password string, ctx gin.Context) error {
+func CheckBasicAuthentication(username, password string, ctx *gin.Context) error {
 	u, p, err := GetBasicAuthentication(ctx)
 	if err != nil {
 		return err
