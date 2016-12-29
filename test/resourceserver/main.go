@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/maxzerbini/oauth"
+	cors "gopkg.in/gin-contrib/cors.v1"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 /*
@@ -33,6 +34,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
+	router.Use(cors.Default()) // enable Cross-Origin Resource Sharing
 	gin.SetMode(gin.DebugMode)
 	registerAPI(router)
 	router.Run(":3200")
