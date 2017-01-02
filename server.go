@@ -62,7 +62,7 @@ func (s *OAuthBearerServer) UserCredentials(ctx *gin.Context) {
 	password := ctx.PostForm("password")
 	scope := ctx.PostForm("scope")
 	if username == "" || password == "" {
-		// get clientId and secret from basic authorization header
+		// get username and password from basic authorization header
 		var err error
 		username, password, err = GetBasicAuthentication(ctx)
 		if err != nil {
