@@ -3,6 +3,10 @@ OAuth 2.0 Authorization Server &amp; Authorization Middleware for [Gin-Gonic](ht
 
 This library offers an OAuth 2.0 Authorization Server based on Gin-Gonic and an Authorization Middleware usable in Resource Servers developed with Gin-Gonic.
 
+
+## Build status
+[![Build Status](https://travis-ci.org/maxzerbini/oauth.svg?branch=master)](https://travis-ci.org/maxzerbini/oauth)
+
 ## Authorization Server
 The Authorization Server is implemented by the struct _OAuthBearerServer_ that manages two grant types of authorizations (password and client_credentials). 
 This Authorization Server is made to provide authorization token usable for consuming resources API. 
