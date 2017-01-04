@@ -14,7 +14,7 @@ func TestGetBasicAuthentication(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/token", nil)
 	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("admin:password123456")))
 
-	context := gin.Context{Request: req}
+	context := &gin.Context{Request: req}
 
 	username, password, err := GetBasicAuthentication(context)
 	if err != nil {
@@ -34,7 +34,7 @@ func TestVoidBasicAuthentication(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/token", nil)
 
-	context := gin.Context{Request: req}
+	context := &gin.Context{Request: req}
 
 	username, password, err := GetBasicAuthentication(context)
 	if err != nil {
@@ -56,7 +56,7 @@ func TestCheckBasicAuthentication(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/token", nil)
 	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("admin:password123456")))
 
-	context := gin.Context{Request: req}
+	context := &gin.Context{Request: req}
 
 	err := CheckBasicAuthentication("admin", "password123456", context)
 	if err != nil {
