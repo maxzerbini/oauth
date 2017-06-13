@@ -32,8 +32,8 @@ type CredentialsVerifier interface {
 
 // AuthorizationCodeVerifier defines the interface of the Authorization Code verifier
 type AuthorizationCodeVerifier interface {
-	// ValidateCode checks the authorization code
-	ValidateCode(clientID, clientSecret, code, redirectURI string) error
+	// ValidateCode checks the authorization code and returns the user credential
+	ValidateCode(clientID, clientSecret, code, redirectURI string) (string, error)
 }
 
 // OAuthBearerServer is the OAuth 2 Bearer Server implementation.
@@ -177,12 +177,12 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 		}
 	} else if grantType == "authorization_code" {
 		if codeVerifier, ok := s.verifier.(AuthorizationCodeVerifier); ok {
-			err := codeVerifier.ValidateCode(credential, secret, code, redirectURI)
+			user, err := codeVerifier.ValidateCode(credential, secret, code, redirectURI)
 			if err == nil {
-				token, refresh, err := s.generateTokens(credential, "A")
+				token, refresh, err := s.generateTokens(user, "A")
 				if err == nil {
 					// Store token id
-					err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
+					err = s.verifier.StoreTokenId(user, token.Id, refresh.RefreshTokenId, token.TokenType)
 					if err != nil {
 						return http.StatusInternalServerError, "Storing Token Id failed"
 					}
