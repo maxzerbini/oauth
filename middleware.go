@@ -45,6 +45,7 @@ func (ba *BearerAuthentication) Authorize(ctx *gin.Context) {
 		ctx.Set("oauth.claims", token.Claims)
 		ctx.Set("oauth.scope", token.Scope)
 		ctx.Set("oauth.tokentype", token.TokenType)
+		ctx.Set("oauth.accesstoken", auth[7:])
 		ctx.Next()
 	}
 }
