@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
-	"gopkg.in/gin-gonic/gin.v1"
 )
 
 const (
@@ -28,6 +28,12 @@ type CredentialsVerifier interface {
 	AddProperties(credential, tokenID, tokenType string) (map[string]string, error)
 	// Optionally validate previously stored tokenID during refresh request
 	ValidateTokenId(credential, tokenID, refreshTokenID, tokenType string) error
+}
+
+// AuthorizationCodeVerifier defines the interface of the Authorization Code verifier
+type AuthorizationCodeVerifier interface {
+	// ValidateCode checks the authorization code
+	ValidateCode(clientID, clientSecret, code, redirectURI string) error
 }
 
 // OAuthBearerServer is the OAuth 2 Bearer Server implementation.
@@ -72,7 +78,7 @@ func (s *OAuthBearerServer) UserCredentials(ctx *gin.Context) {
 	}
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope)
+	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope, "", "")
 	ctx.JSON(code, resp)
 }
 
@@ -94,12 +100,33 @@ func (s *OAuthBearerServer) ClientCredentials(ctx *gin.Context) {
 	scope := ctx.PostForm("scope")
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken, scope)
+	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken, scope, "", "")
 	ctx.JSON(code, resp)
 }
 
+// AuthorizationCode manages authorization code grant type requests for the phase two of the authorization process
+func (s *OAuthBearerServer) AuthorizationCode(ctx *gin.Context) {
+	grantType := ctx.PostForm("grant_type")
+	// grant_type client_credentials variables
+	clientId := ctx.PostForm("client_id")
+	clientSecret := ctx.PostForm("client_secret") // not mandatory
+	code := ctx.PostForm("code")
+	redirectURI := ctx.PostForm("redirect_uri") // not mandatory
+	if clientId == "" {
+		// get clientId and secret from basic authorization header
+		var err error
+		clientId, clientSecret, err = GetBasicAuthentication(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, "Not authorized")
+			return
+		}
+	}
+	status, resp := s.generateTokenResponse(grantType, clientId, clientSecret, "", "", code, redirectURI)
+	ctx.JSON(status, resp)
+}
+
 // Generate token response
-func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken, scope string) (int, Any) {
+func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken, scope, code, redirectURI string) (int, Any) {
 	// check grant_Type
 	if grantType == "password" {
 		err := s.verifier.ValidateUser(credential, secret, scope)
@@ -147,6 +174,34 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 		} else {
 			//not autorized
 			return http.StatusUnauthorized, "Not authorized"
+		}
+	} else if grantType == "authorization_code" {
+		if codeVerifier, ok := s.verifier.(AuthorizationCodeVerifier); ok {
+			err := codeVerifier.ValidateCode(credential, secret, code, redirectURI)
+			if err == nil {
+				token, refresh, err := s.generateTokens(credential, "A")
+				if err == nil {
+					// Store token id
+					err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
+					if err != nil {
+						return http.StatusInternalServerError, "Storing Token Id failed"
+					}
+					resp, err := s.cryptTokens(token, refresh)
+					if err == nil {
+						return http.StatusOK, resp
+					} else {
+						return http.StatusInternalServerError, "Token generation failed, check security provider"
+					}
+				} else {
+					return http.StatusInternalServerError, "Token generation failed, check claims"
+				}
+			} else {
+				//not autorized
+				return http.StatusUnauthorized, "Not authorized"
+			}
+		} else {
+			//not autorized
+			return http.StatusUnauthorized, "Not authorized, grant type not supported"
 		}
 	} else if grantType == "refresh_token" {
 		// refresh token

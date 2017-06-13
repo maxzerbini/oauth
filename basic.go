@@ -1,6 +1,6 @@
 package oauth
 
-import "gopkg.in/gin-gonic/gin.v1"
+import "github.com/gin-gonic/gin"
 import "strings"
 import "encoding/base64"
 import "errors"
