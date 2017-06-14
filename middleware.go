@@ -28,7 +28,7 @@ func NewBearerAuthentication(secretKey string, formatter TokenSecureFormatter) *
 // Authorize is the OAuth 2.0 middleware for Gin-Gonic resource server.
 // Authorize creates a BearerAuthentication middlever and return the Authorize method.
 func Authorize(secretKey string, formatter TokenSecureFormatter) gin.HandlerFunc {
-	return NewBearerAuthentication("mySecretKey-10101", nil).Authorize
+	return NewBearerAuthentication(secretKey, nil).Authorize
 }
 
 // Authorize verifies the bearer token authorizing or not the request.
