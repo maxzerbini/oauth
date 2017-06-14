@@ -109,3 +109,8 @@ func (*TestUserVerifier) AddProperties(credential, tokenId, tokenType string) (m
 func (*TestUserVerifier) ValidateTokenId(credential, tokenId, refreshTokenID, tokenType string) error {
 	return nil
 }
+
+// Validate token Id
+func (*TestUserVerifier) ValidateCode(clientID, clientSecret, code, redirectURI string) (string, error) {
+	return "", nil
+}

@@ -38,7 +38,7 @@ func (ba *BearerAuthentication) Authorize(ctx *gin.Context) {
 	auth := ctx.Request.Header.Get("Authorization")
 	token, err := ba.checkAuthorizationHeader(auth)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, "Not authorized")
+		ctx.JSON(http.StatusUnauthorized, "Not authorized: "+err.Error())
 		ctx.AbortWithStatus(401)
 	} else {
 		ctx.Set("oauth.credential", token.Credential)
