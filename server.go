@@ -112,6 +112,7 @@ func (s *OAuthBearerServer) AuthorizationCode(ctx *gin.Context) {
 	clientSecret := ctx.PostForm("client_secret") // not mandatory
 	code := ctx.PostForm("code")
 	redirectURI := ctx.PostForm("redirect_uri") // not mandatory
+	scope := ctx.PostForm("scope")              // not mandatory
 	if clientId == "" {
 		// get clientId and secret from basic authorization header
 		var err error
@@ -121,7 +122,7 @@ func (s *OAuthBearerServer) AuthorizationCode(ctx *gin.Context) {
 			return
 		}
 	}
-	status, resp := s.generateTokenResponse(grantType, clientId, clientSecret, "", "", code, redirectURI)
+	status, resp := s.generateTokenResponse(grantType, clientId, clientSecret, "", scope, code, redirectURI)
 	ctx.JSON(status, resp)
 }
 
@@ -131,7 +132,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 	if grantType == "password" {
 		err := s.verifier.ValidateUser(credential, secret, scope)
 		if err == nil {
-			token, refresh, err := s.generateTokens(credential, "U")
+			token, refresh, err := s.generateTokens(credential, "U", scope)
 			if err == nil {
 				// Store token id
 				err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
@@ -155,7 +156,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 	} else if grantType == "client_credentials" {
 		err := s.verifier.ValidateClient(credential, secret, scope)
 		if err == nil {
-			token, refresh, err := s.generateTokens(credential, "C")
+			token, refresh, err := s.generateTokens(credential, "C", scope)
 			if err == nil {
 				// Store token id
 				err = s.verifier.StoreTokenId(credential, token.Id, refresh.RefreshTokenId, token.TokenType)
@@ -179,7 +180,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 		if codeVerifier, ok := s.verifier.(AuthorizationCodeVerifier); ok {
 			user, err := codeVerifier.ValidateCode(credential, secret, code, redirectURI)
 			if err == nil {
-				token, refresh, err := s.generateTokens(user, "A")
+				token, refresh, err := s.generateTokens(user, "A", scope)
 				if err == nil {
 					// Store token id
 					err = s.verifier.StoreTokenId(user, token.Id, refresh.RefreshTokenId, token.TokenType)
@@ -210,7 +211,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 			err = s.verifier.ValidateTokenId(refresh.Credential, refresh.TokenId, refresh.RefreshTokenId, refresh.TokenType)
 			if err == nil {
 				// generate new token
-				token, refresh, err := s.generateTokens(refresh.Credential, refresh.TokenType)
+				token, refresh, err := s.generateTokens(refresh.Credential, refresh.TokenType, refresh.Scope)
 				if err == nil {
 					// Store token id
 					err = s.verifier.StoreTokenId(refresh.Credential, token.Id, refresh.RefreshTokenId, token.TokenType)
@@ -240,8 +241,8 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 	}
 }
 
-func (s *OAuthBearerServer) generateTokens(username string, tokenType string) (token *Token, refresh *RefreshToken, err error) {
-	token = &Token{Credential: username, ExperesIn: s.TokenTTL, CreationDate: time.Now().UTC(), TokenType: tokenType}
+func (s *OAuthBearerServer) generateTokens(username, tokenType, scope string) (token *Token, refresh *RefreshToken, err error) {
+	token = &Token{Credential: username, ExperesIn: s.TokenTTL, CreationDate: time.Now().UTC(), TokenType: tokenType, Scope: scope}
 	// generate token Id
 	token.Id = uuid.NewV4().String()
 	if s.verifier != nil {
@@ -254,7 +255,7 @@ func (s *OAuthBearerServer) generateTokens(username string, tokenType string) (t
 		}
 	}
 	// create refresh token
-	refresh = &RefreshToken{RefreshTokenId: uuid.NewV4().String(), TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType}
+	refresh = &RefreshToken{RefreshTokenId: uuid.NewV4().String(), TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType, Scope: scope}
 
 	return token, refresh, nil
 }

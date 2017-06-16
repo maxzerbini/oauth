@@ -31,4 +31,5 @@ type RefreshToken struct {
 	RefreshTokenId string    `json:"id_refresh_token"`
 	Credential     string    `json:"credential"`
 	TokenType      string    `json:"type"` // "U" for user, "C" for client
+	Scope          string    `json:"scope"`
 }
