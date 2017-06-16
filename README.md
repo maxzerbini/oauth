@@ -18,7 +18,7 @@ _OAuthBearerServer_ supports password grant type allowing the token generation f
 _OAuthBearerServer_ supports client_credentials grant type allowing the token generation for client_id / client_secret credentials.
 
 ### Authorization Code and Implicit grant type
-These grant types are currently partially supported implementing AuthorizationCodeVerifier interface. The method ValidateCode is called during the pahase two of the authorization_code grant type evalutation.
+These grant types are currently partially supported implementing AuthorizationCodeVerifier interface. The method ValidateCode is called during the phase two of the authorization_code grant type evalutation.
 
 ### Refresh token grant type
 If authorization token will expire, client can regenerate the token calling the authorization server and using the refresh_token grant type.
