@@ -21,7 +21,7 @@ type CredentialsVerifier interface {
 	// Validate clientId and secret returning an error if the client credentials are wrong
 	ValidateClient(clientID, clientSecret, scope string) error
 	// Provide additional claims to the token
-	AddClaims(credential, tokenID, tokenType string) (map[string]string, error)
+	AddClaims(credential, tokenID, tokenType, scope string) (map[string]string, error)
 	// Optionally store the tokenID generated for the user
 	StoreTokenId(credential, tokenID, refreshTokenID, tokenType string) error
 	// Provide additional information to the authorization server response
@@ -245,7 +245,7 @@ func (s *OAuthBearerServer) generateTokens(username string, tokenType string) (t
 	// generate token Id
 	token.Id = uuid.NewV4().String()
 	if s.verifier != nil {
-		claims, err := s.verifier.AddClaims(username, token.Id, token.TokenType)
+		claims, err := s.verifier.AddClaims(username, token.Id, token.TokenType, token.Scope)
 		if err == nil {
 			token.Claims = claims
 		} else {

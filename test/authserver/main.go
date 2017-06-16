@@ -67,50 +67,48 @@ func registerAPI(router *gin.Engine) {
 type TestUserVerifier struct {
 }
 
-// Validate username and password returning an error if the user credentials are wrong
+// ValidateUser validates username and password returning an error if the user credentials are wrong
 func (*TestUserVerifier) ValidateUser(username, password, scope string) error {
 	if username == "user01" && password == "12345" {
 		return nil
-	} else {
-		return errors.New("Wrong user")
 	}
+	return errors.New("Wrong user")
 }
 
-// Validate clientId and secret returning an error if the client credentials are wrong
-func (*TestUserVerifier) ValidateClient(clientId, clientSecret, scope string) error {
-	if clientId == "abcdef" && clientSecret == "12345" {
+// ValidateClient validates clientId and secret returning an error if the client credentials are wrong
+func (*TestUserVerifier) ValidateClient(clientID, clientSecret, scope string) error {
+	if clientID == "abcdef" && clientSecret == "12345" {
 		return nil
-	} else {
-		return errors.New("Wrong client")
 	}
+	return errors.New("Wrong client")
 }
 
-// Provide additional claims to the token
-func (*TestUserVerifier) AddClaims(credential, tokenId, tokenType string) (map[string]string, error) {
+// AddClaims provides additional claims to the token
+func (*TestUserVerifier) AddClaims(credential, tokenID, tokenType, scope string) (map[string]string, error) {
 	claims := make(map[string]string)
 	claims["customerId"] = "1001"
 	claims["customerData"] = `{"OrderDate":"2016-12-14","OrderId":"9999"}`
 	return claims, nil
 }
 
-// Optionally store the token Id generated for the user
+// StoreTokenId saves the token Id generated for the user
 func (*TestUserVerifier) StoreTokenId(credential, tokenId, refreshTokenID, tokenType string) error {
 	return nil
 }
 
-// Provide additional information to the token response
+// AddProperties provides additional information to the token response
 func (*TestUserVerifier) AddProperties(credential, tokenId, tokenType string) (map[string]string, error) {
 	props := make(map[string]string)
 	props["customerName"] = "Gopher"
 	return props, nil
 }
 
-// Validate token Id
+// ValidateTokenId validates token Id
 func (*TestUserVerifier) ValidateTokenId(credential, tokenId, refreshTokenID, tokenType string) error {
 	return nil
 }
 
-// Validate token Id
+// ValidateCode validates token Id
 func (*TestUserVerifier) ValidateCode(clientID, clientSecret, code, redirectURI string) (string, error) {
 	return "", nil
 }

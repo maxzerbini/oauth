@@ -18,7 +18,7 @@ _OAuthBearerServer_ supports password grant type allowing the token generation f
 _OAuthBearerServer_ supports client_credentials grant type allowing the token generation for client_id / client_secret credentials.
 
 ### Authorization Code and Implicit grant type
-These grant types are currently not supported.
+These grant types are currently partially supported implementing AuthorizationCodeVerifier interface. The method ValidateCode is called during the pahase two of the authorization_code grant type evalutation.
 
 ### Refresh token grant type
 If authorization token will expire, client can regenerate the token calling the authorization server and using the refresh_token grant type.
@@ -80,6 +80,9 @@ This snippet shows how to use the middleware
 See [/test/resourceserver/main.go](https://github.com/maxzerbini/oauth/blob/master/test/resourceserver/main.go) for the full example.
 
 Note that the authorization server and the authorization middleware are both using the same token formatter and the same secret key for encryption/decryption.
+
+## Note
+This master branch introcuces a breacking change in the interface CredentialsVerifier method AddClaims adding the parameter scope. Refer to v1 branch for the older implementation.
 
 ## Reference
 - [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749)
