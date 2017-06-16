@@ -129,7 +129,7 @@ func (*TestUserVerifier) ValidateClient(clientId, clientSecret, scope string) er
 }
 
 // Provide additional claims to the token
-func (*TestUserVerifier) AddClaims(credential, tokenID, tokenType string) (map[string]string, error) {
+func (*TestUserVerifier) AddClaims(credential, tokenID, tokenType, scope string) (map[string]string, error) {
 	claims := make(map[string]string)
 	claims["customerId"] = "1001"
 	claims["customerData"] = `{"OrderDate":"2016-12-14","OrderId":"9999"}`
