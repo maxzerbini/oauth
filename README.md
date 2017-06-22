@@ -82,7 +82,7 @@ See [/test/resourceserver/main.go](https://github.com/maxzerbini/oauth/blob/mast
 Note that the authorization server and the authorization middleware are both using the same token formatter and the same secret key for encryption/decryption.
 
 ## Note
-This master branch introcuces a breacking change in the interface CredentialsVerifier method AddClaims adding the parameter scope. Refer to v1 branch for the older implementation.
+This master branch introcuces breacking changes in the interface CredentialsVerifier methods _ValidateUser_, _ValidateClient_ and _AddClaims_. Refer to v1 branch for the previous implementation.
 
 ## Reference
 - [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749)

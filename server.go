@@ -17,9 +17,9 @@ type Any interface{}
 // CredentialsVerifier defines the interface of the user and client credentials verifier.
 type CredentialsVerifier interface {
 	// Validate username and password returning an error if the user credentials are wrong
-	ValidateUser(username, password, scope string) error
+	ValidateUser(username, password, scope string, req *http.Request) error
 	// Validate clientId and secret returning an error if the client credentials are wrong
-	ValidateClient(clientID, clientSecret, scope string) error
+	ValidateClient(clientID, clientSecret, scope string, req *http.Request) error
 	// Provide additional claims to the token
 	AddClaims(credential, tokenID, tokenType, scope string) (map[string]string, error)
 	// Optionally store the tokenID generated for the user
@@ -33,7 +33,7 @@ type CredentialsVerifier interface {
 // AuthorizationCodeVerifier defines the interface of the Authorization Code verifier
 type AuthorizationCodeVerifier interface {
 	// ValidateCode checks the authorization code and returns the user credential
-	ValidateCode(clientID, clientSecret, code, redirectURI string) (string, error)
+	ValidateCode(clientID, clientSecret, code, redirectURI string, req *http.Request) (string, error)
 }
 
 // OAuthBearerServer is the OAuth 2 Bearer Server implementation.
@@ -78,7 +78,7 @@ func (s *OAuthBearerServer) UserCredentials(ctx *gin.Context) {
 	}
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope, "", "")
+	code, resp := s.generateTokenResponse(grantType, username, password, refreshToken, scope, "", "", ctx.Request)
 	ctx.JSON(code, resp)
 }
 
@@ -100,7 +100,7 @@ func (s *OAuthBearerServer) ClientCredentials(ctx *gin.Context) {
 	scope := ctx.PostForm("scope")
 	// grant_type refresh_token
 	refreshToken := ctx.PostForm("refresh_token")
-	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken, scope, "", "")
+	code, resp := s.generateTokenResponse(grantType, clientId, clientSecret, refreshToken, scope, "", "", ctx.Request)
 	ctx.JSON(code, resp)
 }
 
@@ -122,15 +122,15 @@ func (s *OAuthBearerServer) AuthorizationCode(ctx *gin.Context) {
 			return
 		}
 	}
-	status, resp := s.generateTokenResponse(grantType, clientId, clientSecret, "", scope, code, redirectURI)
+	status, resp := s.generateTokenResponse(grantType, clientId, clientSecret, "", scope, code, redirectURI, ctx.Request)
 	ctx.JSON(status, resp)
 }
 
 // Generate token response
-func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken, scope, code, redirectURI string) (int, Any) {
+func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret, refreshToken, scope, code, redirectURI string, req *http.Request) (int, Any) {
 	// check grant_Type
 	if grantType == "password" {
-		err := s.verifier.ValidateUser(credential, secret, scope)
+		err := s.verifier.ValidateUser(credential, secret, scope, req)
 		if err == nil {
 			token, refresh, err := s.generateTokens(credential, "U", scope)
 			if err == nil {
@@ -154,7 +154,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 			return http.StatusUnauthorized, "Not authorized"
 		}
 	} else if grantType == "client_credentials" {
-		err := s.verifier.ValidateClient(credential, secret, scope)
+		err := s.verifier.ValidateClient(credential, secret, scope, req)
 		if err == nil {
 			token, refresh, err := s.generateTokens(credential, "C", scope)
 			if err == nil {
@@ -178,7 +178,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 		}
 	} else if grantType == "authorization_code" {
 		if codeVerifier, ok := s.verifier.(AuthorizationCodeVerifier); ok {
-			user, err := codeVerifier.ValidateCode(credential, secret, code, redirectURI)
+			user, err := codeVerifier.ValidateCode(credential, secret, code, redirectURI, req)
 			if err == nil {
 				token, refresh, err := s.generateTokens(user, "A", scope)
 				if err == nil {

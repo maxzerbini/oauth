@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -68,7 +69,7 @@ type TestUserVerifier struct {
 }
 
 // ValidateUser validates username and password returning an error if the user credentials are wrong
-func (*TestUserVerifier) ValidateUser(username, password, scope string) error {
+func (*TestUserVerifier) ValidateUser(username, password, scope string, req *http.Request) error {
 	if username == "user01" && password == "12345" {
 		return nil
 	}
@@ -76,7 +77,7 @@ func (*TestUserVerifier) ValidateUser(username, password, scope string) error {
 }
 
 // ValidateClient validates clientId and secret returning an error if the client credentials are wrong
-func (*TestUserVerifier) ValidateClient(clientID, clientSecret, scope string) error {
+func (*TestUserVerifier) ValidateClient(clientID, clientSecret, scope string, req *http.Request) error {
 	if clientID == "abcdef" && clientSecret == "12345" {
 		return nil
 	}
@@ -109,6 +110,6 @@ func (*TestUserVerifier) ValidateTokenId(credential, tokenId, refreshTokenID, to
 }
 
 // ValidateCode validates token Id
-func (*TestUserVerifier) ValidateCode(clientID, clientSecret, code, redirectURI string) (string, error) {
+func (*TestUserVerifier) ValidateCode(clientID, clientSecret, code, redirectURI string, req *http.Request) (string, error) {
 	return "", nil
 }
