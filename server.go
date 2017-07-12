@@ -229,7 +229,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 				}
 			} else {
 				//not autorized invalid token Id
-				return http.StatusUnauthorized, "Not authorized"
+				return http.StatusUnauthorized, "Not authorized invalid token"
 			}
 		} else {
 			//not autorized
