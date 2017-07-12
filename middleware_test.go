@@ -13,7 +13,7 @@ func init() {
 }
 
 func TestAuthorizationHeader(t *testing.T) {
-	code, resp := _sut.generateTokenResponse("password", "user111", "password111", "", "", "", "")
+	code, resp := _sut.generateTokenResponse("password", "user111", "password111", "", "", "", "", nil)
 	if code != 200 {
 		t.Fatalf("Error StatusCode = %d", code)
 	}
