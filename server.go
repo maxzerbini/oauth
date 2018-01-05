@@ -244,7 +244,7 @@ func (s *OAuthBearerServer) generateTokenResponse(grantType, credential, secret,
 func (s *OAuthBearerServer) generateTokens(username, tokenType, scope string) (token *Token, refresh *RefreshToken, err error) {
 	token = &Token{Credential: username, ExperesIn: s.TokenTTL, CreationDate: time.Now().UTC(), TokenType: tokenType, Scope: scope}
 	// generate token Id
-	token.Id = uuid.NewV4().String()
+	token.Id = uuid.Must(uuid.NewV4()).String()
 	if s.verifier != nil {
 		claims, err := s.verifier.AddClaims(username, token.Id, token.TokenType, token.Scope)
 		if err == nil {
@@ -255,7 +255,7 @@ func (s *OAuthBearerServer) generateTokens(username, tokenType, scope string) (t
 		}
 	}
 	// create refresh token
-	refresh = &RefreshToken{RefreshTokenId: uuid.NewV4().String(), TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType, Scope: scope}
+	refresh = &RefreshToken{RefreshTokenId: uuid.Must(uuid.NewV4()).String(), TokenId: token.Id, CreationDate: time.Now().UTC(), Credential: username, TokenType: tokenType, Scope: scope}
 
 	return token, refresh, nil
 }
