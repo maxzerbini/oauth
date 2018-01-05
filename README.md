@@ -9,19 +9,19 @@ This library offers an OAuth 2.0 Authorization Server based on Gin-Gonic and an 
 
 ## Authorization Server
 The Authorization Server is implemented by the struct _OAuthBearerServer_ that manages two grant types of authorizations (password and client_credentials). 
-This Authorization Server is made to provide authorization token usable for consuming resources API. 
+This Authorization Server is made to provide an authorization token usable for consuming resources API. 
 
 ### Password grant type
-_OAuthBearerServer_ supports password grant type allowing the token generation for username / password credentials.
+_OAuthBearerServer_ supports the password grant type, allowing the token generation for username / password credentials.
 
 ### Client Credentials grant type
-_OAuthBearerServer_ supports client_credentials grant type allowing the token generation for client_id / client_secret credentials.
+_OAuthBearerServer_ supports the client_credentials grant type, allowing the token generation for client_id / client_secret credentials.
 
 ### Authorization Code and Implicit grant type
-These grant types are currently partially supported implementing AuthorizationCodeVerifier interface. The method ValidateCode is called during the phase two of the authorization_code grant type evalutation.
+These grant types are currently partially supported implementing AuthorizationCodeVerifier interface. The method ValidateCode is called during the phase two of the authorization_code grant type evalutations.
 
 ### Refresh token grant type
-If authorization token will expire, client can regenerate the token calling the authorization server and using the refresh_token grant type.
+If authorization token will expire, the client can regenerate the token calling the authorization server and using the refresh_token grant type.
 
 ## Authorization Middleware 
 The Gin-Gonic middleware _BearerAuthentication_ intercepts the resource server calls and authorizes only resource requests containing a valid bearer token.
@@ -82,7 +82,8 @@ See [/test/resourceserver/main.go](https://github.com/maxzerbini/oauth/blob/mast
 Note that the authorization server and the authorization middleware are both using the same token formatter and the same secret key for encryption/decryption.
 
 ## Note
-This master branch introcuces breacking changes in the interface CredentialsVerifier methods _ValidateUser_, _ValidateClient_ and _AddClaims_. Refer to v1 branch for the previous implementation.
+This master branch introduces breaking changes in the interface CredentialsVerifier methods _ValidateUser_, _ValidateClient_ and _AddClaims_. Refer to v1 branch for the previous implementation.
+Updated server implementation in v3 due to go.uuid library change.
 
 ## Reference
 - [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749)
