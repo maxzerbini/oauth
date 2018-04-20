@@ -25,7 +25,7 @@ type CredentialsVerifier interface {
 	// Optionally store the tokenID generated for the user
 	StoreTokenId(credential, tokenID, refreshTokenID, tokenType string) error
 	// Provide additional information to the authorization server response
-	AddProperties(credential, tokenID, tokenType string) (map[string]string, error)
+	AddProperties(credential, tokenID, tokenType string, scope string) (map[string]string, error)
 	// Optionally validate previously stored tokenID during refresh request
 	ValidateTokenId(credential, tokenID, refreshTokenID, tokenType string) error
 }
@@ -273,7 +273,7 @@ func (s *OAuthBearerServer) cryptTokens(token *Token, refresh *RefreshToken) (re
 
 	if s.verifier != nil {
 		// add properties
-		props, err := s.verifier.AddProperties(token.Credential, token.Id, token.TokenType)
+		props, err := s.verifier.AddProperties(token.Credential, token.Id, token.TokenType, token.Scope)
 		if err == nil {
 			resp.Properties = props
 		}
