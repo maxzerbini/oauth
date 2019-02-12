@@ -143,7 +143,7 @@ func (*TestUserVerifier) StoreTokenId(credential, tokenID, refreshTokenID, token
 }
 
 // Provide additional information to the token response
-func (*TestUserVerifier) AddProperties(credential, tokenID, tokenType string) (map[string]string, error) {
+func (*TestUserVerifier) AddProperties(credential, tokenID, tokenType, scope string) (map[string]string, error) {
 	props := make(map[string]string)
 	props["customerName"] = "Gopher"
 	return props, nil
