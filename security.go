@@ -132,6 +132,9 @@ func (sc *SHA256RC4TokenSecureFormatter) CryptToken(source []byte) ([]byte, erro
 }
 
 func (sc *SHA256RC4TokenSecureFormatter) DecryptToken(source []byte) ([]byte, error) {
+	if len(source) < 32 {
+		return nil, errors.New("Invalid token")
+	}
 	dest := make([]byte, len(source))
 	cipher, err := rc4.NewCipher(sc.key)
 	if err != nil {
